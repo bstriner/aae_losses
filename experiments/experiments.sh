@@ -36,3 +36,43 @@ JOB_NAME="aae-mgan"
     --save_summary_steps=200  \
     --save_checkpoints_steps=5000 \
     --max_steps=200000
+
+
+JOB_NAME="aae-gan-stoch"
+/data/VOL3/bstriner/aae_losses/experiments/sbatch.sh \
+    "${JOB_NAME}" \
+    /data/VOL3/bstriner/aae_losses/logs/${JOB_NAME}.txt \
+    --config="conf/gan.json" \
+    --model_dir="../output/${JOB_NAME}" \
+    --train_batch_size=4 \
+    --eval_batch_size=4 \
+    --save_summary_steps=200  \
+    --save_checkpoints_steps=5000 \
+    --hparams="stochastic=true" \
+    --max_steps=200000
+
+JOB_NAME="aae-wgan-stoch"
+/data/VOL3/bstriner/aae_losses/experiments/sbatch.sh \
+    "${JOB_NAME}" \
+    /data/VOL3/bstriner/aae_losses/logs/${JOB_NAME}.txt \
+    --config="conf/wgan.json" \
+    --model_dir="../output/${JOB_NAME}" \
+    --train_batch_size=4 \
+    --eval_batch_size=4 \
+    --save_summary_steps=200  \
+    --save_checkpoints_steps=5000 \
+    --hparams="stochastic=true" \
+    --max_steps=200000
+
+JOB_NAME="aae-mgan-stoch"
+/data/VOL3/bstriner/aae_losses/experiments/sbatch.sh \
+    "${JOB_NAME}" \
+    /data/VOL3/bstriner/aae_losses/logs/${JOB_NAME}.txt \
+    --config="conf/mgan.json" \
+    --model_dir="../output/${JOB_NAME}" \
+    --train_batch_size=4 \
+    --eval_batch_size=4 \
+    --save_summary_steps=200  \
+    --save_checkpoints_steps=5000 \
+    --hparams="stochastic=true" \
+    --max_steps=200000

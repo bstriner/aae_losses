@@ -8,12 +8,6 @@ from .networks.encoder_net import encoder_net
 from .train_op import get_total_loss, make_train_op
 
 
-def sample(mu, logsigmasq):
-    noise = tf.random.normal(shape=tf.shape(mu))
-    sigma = tf.exp(logsigmasq / 2.0)
-    return mu + (noise * sigma)
-
-
 def image_grid_summary(name, x):
     assert x.shape.ndims == 4
     img = x[:25]
@@ -30,11 +24,10 @@ def model_fn(features, labels, mode, params):
     n = tf.shape(x)[0]
     with tf.variable_scope('autoencoder') as autoencoder_scope:
         with tf.variable_scope('encoder'):
-            mu, logsigmasq = encoder_net(
+            latent = encoder_net(
                 x=x,
                 params=params
             )
-            latent = sample(mu=mu, logsigmasq=logsigmasq)
             latent_prior = tf.random.normal(shape=tf.shape(latent))
         with tf.variable_scope('decoder', reuse=False) as decoder_scope:
             x_autoencoded = decoder_net(

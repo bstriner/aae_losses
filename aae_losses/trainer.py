@@ -23,7 +23,9 @@ DEFAULT_HPARAMS = {
     "penalty_weight": 100.0,
     "reconstruction_weight": 1e-1,
     "gan_weight": 10.0,
-    "discriminator_steps": 10
+    "discriminator_steps": 10,
+    "stochastic": False,
+    "noise_dim": 128
 }
 FLAGS = tf.app.flags.FLAGS
 
