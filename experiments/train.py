@@ -10,8 +10,8 @@ def main(_):
 if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.INFO)
     train_flags(
-        config='conf/wgan.json',
-        model_dir='../output/wgan/v4',
+        config='conf/gan.json',
+        model_dir='../output/gan/v1',
         batch_size=32,
         save_summary_steps=100,
         save_summary_steps_slow=400,

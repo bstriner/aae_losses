@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.contrib.gan.python.train import RunTrainOpsHook
 
-from .losses import wgan_losses, wgan_penalty_loss
+from .losses import aae_losses, wgan_penalty_loss
 from .networks.decoder_net import decoder_net
 from .networks.discriminator_net import discriminator_net
 from .networks.encoder_net import encoder_net
@@ -15,11 +15,11 @@ def sample(mu, logsigmasq):
 
 
 def image_grid_summary(name, x):
-    assert x.shame.ndims == 4
+    assert x.shape.ndims == 4
     img = x[:25]
-    img = tf.reshape(img, (5,5,28,28))
-    img = tf.transpose(img, (0,2,1,3))
-    img = tf.reshape(img, (1, 28*5, 28*5, 1))
+    img = tf.reshape(img, (5, 5, 28, 28))
+    img = tf.transpose(img, (0, 2, 1, 3))
+    img = tf.reshape(img, (1, 28 * 5, 28 * 5, 1))
     tf.summary.image(name, img)
 
 
@@ -47,7 +47,7 @@ def model_fn(features, labels, mode, params):
                 params=params
             )
         assert x_generated.shape.ndims == x.shape.ndims
-        reconstruction_loss = tf.reduce_sum(
+        reconstruction_loss = params.reconstruction_weight * tf.reduce_sum(
             tf.square(x - x_autoencoded)
         )
         tf.summary.scalar("reconstruction_loss", reconstruction_loss)
@@ -77,19 +77,19 @@ def model_fn(features, labels, mode, params):
                 y_interp=y_interp,
                 penalty_weight=params.penalty_weight
             )
-    wgan_losses(
+    aae_losses(
         generator_scope=autoencoder_scope.name,
         discriminator_scope=discriminator_scope.name,
         y_real=y_real,
         y_fake=y_fake,
-        gan_weight=params.gan_weight
+        params=params
     )
 
     dis_total_loss = get_total_loss(discriminator_scope.name)
     gen_total_loss = get_total_loss(autoencoder_scope.name)
     dis_op = make_train_op(
         scope=discriminator_scope.name,
-        optimizer=tf.train.AdamOptimizer(3e-4),
+        optimizer=tf.train.AdamOptimizer(params.dis_lr),
         global_step=None,
         total_loss=dis_total_loss,
         clip_gradient_norm=0,
@@ -98,7 +98,7 @@ def model_fn(features, labels, mode, params):
     )
     gen_op = make_train_op(
         scope=autoencoder_scope.name,
-        optimizer=tf.train.AdamOptimizer(1e-4),
+        optimizer=tf.train.AdamOptimizer(params.gen_lr),
         global_step=tf.train.get_or_create_global_step(),
         total_loss=gen_total_loss,
         clip_gradient_norm=0,

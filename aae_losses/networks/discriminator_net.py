@@ -8,6 +8,7 @@ def discriminator_net(
 ):
     assert z.shape.ndims == 2
     h = z
+    inputs = [h]
     for i in range(params.discriminator_depth):
         h = slim.fully_connected(
             inputs=h,
@@ -15,8 +16,10 @@ def discriminator_net(
             activation_fn=tf.nn.leaky_relu,
             scope='mlp_{}'.format(i)
         )
+        inputs.append(h)
+    all_inputs = tf.concat(inputs, axis=-1)
     h = slim.fully_connected(
-        inputs=h,
+        inputs=all_inputs,
         num_outputs=1,
         activation_fn=None,
         scope='mlp_output'

@@ -11,15 +11,18 @@ from .model import model_fn
 
 DEFAULT_HPARAMS = {
     'loss': 'wgan',
+    "gen_lr": 3e-5,
+    "dis_lr": 3e-4,
     "encoder_dim": 320,
-    "encoder_depth": 4,
+    "encoder_depth": 3,
     "decoder_dim": 320,
-    "decoder_depth": 4,
+    "decoder_depth": 3,
     "discriminator_dim": 512,
-    "discriminator_depth": 6,
+    "discriminator_depth": 5,
     "latent_dim": 128,
     "penalty_weight": 100.0,
-    "gan_weight": 100.0,
+    "reconstruction_weight": 1e-1,
+    "gan_weight": 10.0,
     "discriminator_steps": 10
 }
 FLAGS = tf.app.flags.FLAGS
