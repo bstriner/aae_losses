@@ -14,9 +14,11 @@ def encoder_net(
 ):
     assert x.shape.ndims == 4
     h = tf.reshape(x, (-1, 28 * 28))
+    inputs = [h]
     if params.stochastic:
         noise = tf.random.normal(shape=(tf.shape(h)[0], params.noise_dim))
-        h = tf.concat([h, noise], axis=-1)
+        inputs.append(noise)
+    h = tf.concat(inputs, axis=-1)
     for i in range(params.encoder_depth):
         h = slim.fully_connected(
             inputs=h,
@@ -24,6 +26,8 @@ def encoder_net(
             activation_fn=tf.nn.leaky_relu,
             scope='mlp_{}'.format(i)
         )
+        inputs.append(h)
+        h = tf.concat(inputs, axis=-1)
     if params.stochastic:
         latent = slim.fully_connected(
             inputs=h,
